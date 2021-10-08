@@ -59,6 +59,7 @@ $RECYCLE.BIN/
 # custom 
 node_modules/
 build/
+externalData/
 .env
 .secret
 
