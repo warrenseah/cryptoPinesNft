@@ -12,7 +12,7 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     
     Counters.Counter public nextId;
     
-    uint256 public cost = 10 ether;
+    uint256 public cost = 2000000 gwei;
     uint256 public maxSupply = 10000;
     uint256 public maxMintAmount = 2;
     
