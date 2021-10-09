@@ -3,11 +3,10 @@ pragma solidity ^0.8.7;
 
 import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/token/ERC721/ERC721.sol';
 import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
-import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/token/ERC721/extensions/ERC721Pausable.sol';
 import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/access/Ownable.sol';
 import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/utils/Counters.sol';
 
-contract NFT is ERC721, Ownable, ERC721Enumerable, ERC721Pausable {
+contract NFT is ERC721, Ownable, ERC721Enumerable {
     using Counters for Counters.Counter;
     using Strings for uint;
     
@@ -114,16 +113,6 @@ contract NFT is ERC721, Ownable, ERC721Enumerable, ERC721Pausable {
         pauseMintingState = _state;
     }
     
-    // Pause or unpause transfers
-    function pauseAllTransfer(bool _state) onlyOwner external {
-        require(paused() != _state, 'State is the same, no action is required.');
-        if(_state) {
-            _pause();
-        } else {
-            _unpause();
-        }
-    }
-    
     function withdraw() public payable onlyOwner {
         (bool success, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(success);
@@ -136,9 +125,8 @@ contract NFT is ERC721, Ownable, ERC721Enumerable, ERC721Pausable {
     }
     
     // override inherited contracts
-    function _beforeTokenTransfer(address from, address to, uint tokenId) internal override(ERC721, ERC721Enumerable, ERC721Pausable) {
+    function _beforeTokenTransfer(address from, address to, uint tokenId) internal override(ERC721, ERC721Enumerable) {
         super._beforeTokenTransfer(from, to, tokenId);
-        require(!paused(), "ERC721Pausable: token transfer while paused");
     }
 
     function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
