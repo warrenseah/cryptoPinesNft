@@ -23,15 +23,8 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     bool public pauseMintingState = false;
     bool public revealed = false;
     
-    constructor(
-        string memory _name, 
-        string memory _symbol, 
-        string memory _initBaseURI,
-        string memory _initNotRevealedUri
-    ) ERC721(_name, _symbol) {
+    constructor() ERC721("CryptoPines Test", "PINES") {
         mint(6);
-        baseURI = _initBaseURI;
-        notRevealedUri = _initNotRevealedUri;
     }
     
     // public
@@ -97,8 +90,8 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     }
     
     //only owner
-    function reveal() public onlyOwner() {
-      revealed = true;
+    function reveal(bool _state) public onlyOwner() {
+      revealed = _state;
     }
     
     function setCost(uint256 _newCost) public onlyOwner() {
