@@ -10,7 +10,7 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     using Counters for Counters.Counter;
     using Strings for uint;
     
-    Counters.Counter public tokenCount;
+    Counters.Counter private _tokenCount;
     
     uint256 public cost = 2000000 gwei;
     uint256 public maxSupply = 10000;
@@ -24,7 +24,7 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     bool public revealed = false;
     
     // Used for random index assignment
-    mapping(uint => uint) public tokenMatrix;
+    mapping(uint => uint) private tokenMatrix;
 
     // The initial token ID
     uint public startFrom = 1;
