@@ -6,39 +6,38 @@ import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/ma
 import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/access/Ownable.sol';
 import 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/utils/Counters.sol';
 
-contract NFT is ERC721, Ownable, ERC721Enumerable {
+contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
     using Counters for Counters.Counter;
     using Strings for uint;
     
     Counters.Counter private _tokenCount;
     
-    uint256 public cost = 2000000 gwei;
-    uint256 public maxSupply = 10000;
+    uint256 public cost = 1 ether;
+    uint256 public maxSupply = 10;
     uint256 public maxMintAmount = 2;
     
-    string public baseURI;
+    string public baseURI = "";
     string public baseExtension = ".json";
-    string public notRevealedUri;
+    string public notRevealedUri = "";
     
-    bool public pauseMintingState = false;
+    bool public pauseMintingState = true;
     bool public revealed = false;
     
     // Used for random index assignment
     mapping(uint => uint) private tokenMatrix;
 
     // The initial token ID
-    uint public startFrom = 1;
+    uint public startFrom = 3;
     
-    constructor() ERC721("CryptoPines Test", "PINES") {
-        mint(6);
+    constructor() ERC721("KryptoTrees NFT", "TREE") {
+        linearMint(2);
     }
     
     // public
-    function mint() external payable {
+    function mint() external payable ensureAvailabilityFor(1) {
         require(!pauseMintingState, 'Minting is paused.');
-        require(_tokenCount.current() + 1 <= maxSupply, 'Cannot mint more than total supply.');
         if (msg.sender != owner()) {
-            require(msg.value >= cost);
+            require(msg.value >= cost, 'Need to send the minting fee.');
         }
         _safeMint(msg.sender, nextToken());
     }
@@ -49,7 +48,7 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
         require(_mintAmount <= maxMintAmount, 'Mint amount must not be greater than maxMintAmount');
         
         if (msg.sender != owner()) {
-            require(msg.value >= cost * _mintAmount);
+            require(msg.value >= cost * _mintAmount, 'Need to send the minting fee.');
         }
         
         for (uint i = 1; i <= _mintAmount; i++) {
@@ -91,22 +90,6 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     }
     
     //only owner
-    function reveal(bool _state) public onlyOwner() {
-      revealed = _state;
-    }
-    
-    function setCost(uint256 _newCost) public onlyOwner() {
-        cost = _newCost;
-    }
-    
-    function setmaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner() {
-        maxMintAmount = _newmaxMintAmount;
-    }
-    
-    function setNotRevealedURI(string memory _notRevealedURI) public onlyOwner {
-        notRevealedUri = _notRevealedURI;
-    }
-    
     function setBaseURI(string memory _newBaseURI) public onlyOwner {
         baseURI = _newBaseURI;
     }
@@ -117,6 +100,22 @@ contract NFT is ERC721, Ownable, ERC721Enumerable {
     
     function setPauseMinting(bool _state) public onlyOwner {
         pauseMintingState = _state;
+    }
+    
+    function reveal(bool _state) public onlyOwner() {
+      revealed = _state;
+    }
+    
+    function setCost(uint256 _newCost) public onlyOwner() {
+        cost = _newCost;
+    }
+    
+    function setMaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner() {
+        maxMintAmount = _newmaxMintAmount;
+    }
+    
+    function setNotRevealedURI(string memory _notRevealedURI) public onlyOwner {
+        notRevealedUri = _notRevealedURI;
     }
     
     function withdraw() public payable onlyOwner {
