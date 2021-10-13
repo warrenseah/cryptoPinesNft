@@ -2,6 +2,7 @@ const { expectRevert } = require('@openzeppelin/test-helpers');
 const { web3 } = require('@openzeppelin/test-helpers/src/setup');
 const { assert } = require('chai');
 const KryptoTreesNft = artifacts.require("KryptoTreesNft");
+const Dai = artifacts.require('Dai');
 
 contract("KryptoTreesNft", accounts => {
   let kryptoTreesNft;
@@ -234,6 +235,25 @@ contract("KryptoTreesNft", accounts => {
       kryptoTreesNft.withdraw({ from: nftTrader }),
       'Ownable: caller is not the owner'
     );
+  });
+
+  it("should withdraw mockDai to owner's address", async () => {
+    const dai = await Dai.deployed();
+    await dai.transfer(kryptoTreesNft.address, web3.utils.toWei('1'), {from: admin});
+
+    const contractDai = await dai.balanceOf(kryptoTreesNft.address);
+    console.log('Contract dai balance: ', contractDai.toString());
+    assert(contractDai.toString() === web3.utils.toWei('1'));
+
+    const adminDaiBefore = await dai.balanceOf(admin);
+    console.log('Before admin dai balance: ', adminDaiBefore.toString());
+    assert(adminDaiBefore.toString() === web3.utils.toWei('99'));
+
+    await kryptoTreesNft.withdrawERC20(dai.address);
+
+    const adminDaiAfter = await dai.balanceOf(admin);
+    console.log('After admin dai balance: ', adminDaiAfter.toString());
+    assert(adminDaiAfter.toString() >= web3.utils.toWei('100'));
   });
 
   // Change mintFee cost
