@@ -80,7 +80,7 @@ module.exports = {
   },
 
   // Configure your compilers
-  contracts_build_directory: "./src/contracts/",
+  // contracts_build_directory: "./client/src/contracts/",
   compilers: {
     solc: {
       version: "0.8.7",    // Fetch exact version from solc-bin (default: truffle's version)
