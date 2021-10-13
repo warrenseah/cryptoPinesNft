@@ -64,6 +64,8 @@ externalData/
 .secret
 build/
 deployedFiles/
-client/
+client/build/
+client/node_modules/
+client/src/contracts/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos
