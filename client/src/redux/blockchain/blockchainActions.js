@@ -58,6 +58,7 @@ export const connect = () => {
               account: accounts[0],
               smartContract: SmartContractObj,
               web3: web3,
+              contractAdress: networkData.address
             })
           );
           // Add listeners start
