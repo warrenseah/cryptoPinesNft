@@ -65,9 +65,9 @@ function App() {
       .mint()
       .send({
         // gasLimit: "285000",
-        to: "0xe7a1769044DD57a83Ba7B99504c599f8810b2F89",
+        to: blockchain.contractAddress,
         from: blockchain.account,
-        value: blockchain.web3.utils.toWei((1 * _amount).toString(), "ether"),
+        value: data.cost,
       })
       .once("error", (err) => {
         console.log(err);
@@ -109,7 +109,7 @@ function App() {
             <s.TextTitle
               style={{ textAlign: "center", fontSize: 35, fontWeight: "bold" }}
             >
-              {data.totalSupply}/10
+              {`${data.availableSupply}/${data.maxSupply}`}
             </s.TextTitle>
           </s.Container>
           <s.SpacerMedium />
@@ -119,7 +119,7 @@ function App() {
             ai={"center"}
             style={{ backgroundColor: "#383838", padding: 24 }}
           >
-            {Number(data.totalSupply) == 10 ? (
+            {Number(data.availableSupply) === 10 ? (
               <>
                 <s.TextTitle style={{ textAlign: "center" }}>
                   The sale has ended.
@@ -138,11 +138,11 @@ function App() {
             ) : (
               <>
                 <s.TextTitle style={{ textAlign: "center" }}>
-                  1 TREE NFT costs 12 MATIC.
+                  { blockchain.web3 && data.cost ? `1 TREE NFT costs ${blockchain.web3.utils.fromWei(data.cost)} MATIC.` : ''}
                 </s.TextTitle>
                 <s.SpacerXSmall />
                 <s.TextDescription style={{ textAlign: "center" }}>
-                  Excluding gas fee.
+                { blockchain.web3 && data.cost ? `Max Per Mint is ${data.maxMintAmount}. Excluding gas fee.` : ''}
                 </s.TextDescription>
                 <s.SpacerSmall />
                 <s.TextDescription style={{ textAlign: "center" }}>
