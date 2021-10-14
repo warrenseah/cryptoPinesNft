@@ -55,6 +55,8 @@ function App() {
   const data = useSelector((state) => state.data);
   const [feedback, setFeedback] = useState("Maybe it's your lucky day.");
   const [claimingNft, setClaimingNft] = useState(false);
+  const [mintAmt, setMintAmt] = useState(1);
+
   const claimNFTs = (_amount) => {
     if (_amount <= 0) {
       return;
@@ -62,12 +64,12 @@ function App() {
     setFeedback("Minting your KryptoTree NFT...");
     setClaimingNft(true);
     blockchain.smartContract.methods
-      .mint()
+      .mintTo(blockchain.account, _amount)
       .send({
         // gasLimit: "285000",
         to: blockchain.contractAddress,
         from: blockchain.account,
-        value: data.cost,
+        value: data.cost * _amount
       })
       .once("error", (err) => {
         console.log(err);
@@ -175,18 +177,32 @@ function App() {
                     ) : null}
                   </s.Container>
                 ) : (
-                  <s.Container ai={"center"} jc={"center"} fd={"row"}>
-                    <StyledButton
-                      disabled={claimingNft ? 1 : 0}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        claimNFTs(1);
-                        getData();
-                      }}
-                    >
-                      {claimingNft ? "BUSY" : "BUY 1"}
-                    </StyledButton>
-                  </s.Container>
+                  <><s.Container ai={"center"} jc={"center"} fd={"row"}>
+                        <s.TextDescription>Choose mint amount: </s.TextDescription>
+                        <StyledButton
+                          disabled={claimingNft ? 1 : 0}
+                          onClick={() => setMintAmt(prevState => prevState + 1)}
+                        >
+                          {claimingNft ? "BUSY" : `+`}
+                        </StyledButton>
+                        <StyledButton
+                            disabled={claimingNft ? 1 : 0}
+                            onClick={() => setMintAmt(prevState => prevState - 1)}
+                          >
+                            {claimingNft ? "BUSY" : `-`}
+                          </StyledButton>
+                      </s.Container><s.Container ai={"center"} jc={"center"} fd={"row"}>
+                          <StyledButton
+                            disabled={claimingNft ? 1 : 0}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              claimNFTs(mintAmt);
+                              getData();
+                            } }
+                          >
+                            {claimingNft ? "BUSY" : `BUY ${mintAmt}`}
+                          </StyledButton>
+                        </s.Container></>
                 )}
               </>
             )}
