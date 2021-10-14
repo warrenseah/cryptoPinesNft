@@ -9,10 +9,12 @@ const rootReducer = combineReducers({
 });
 
 const middleware = [thunk];
-const composeEnhancers = compose(applyMiddleware(...middleware));
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const configureStore = () => {
-  return createStore(rootReducer, composeEnhancers);
+  return createStore(rootReducer, composeEnhancers(
+    applyMiddleware(...middleware)
+  ));
 };
 
 const store = configureStore();
