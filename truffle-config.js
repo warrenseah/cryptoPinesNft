@@ -1,3 +1,6 @@
+require('dotenv').config();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -25,6 +28,15 @@
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_KEY,
+    polygonscan: process.env.POLYGONSCAN_KEY
+  },
+
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -36,6 +48,27 @@ module.exports = {
    */
 
   networks: {
+    rinkeby: {
+      provider: () => {
+        new HDWalletProvider({
+          privateKeys: [process.env.PRIVATE_KEY],
+          providerOrUrl: process.env.INFURA_RINKEBY
+        })
+      },
+      network_id: 4,
+      gasPrice: 100000000000
+    },
+
+    matic: {
+      provider: () => new HDWalletProvider({
+        privateKeys: [process.env.PRIVATE_KEY],
+        providerOrUrl: process.env.INFURA_POLYGON
+      }),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200
+    }
+    
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache-cli, geth or parity) in a separate terminal
