@@ -19,7 +19,9 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
     uint256 public maxSupply = 10;
     uint256 public maxMintAmount = 2;
     
+    string public baseURI = "";
     string public baseExtension = ".json";
+    string public notRevealedUri = "";
     
     bool public pauseMintingState = true;
     bool public revealed = false;
