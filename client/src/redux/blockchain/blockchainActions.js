@@ -48,7 +48,7 @@ export const connect = () => {
           method: "net_version",
         });
         const networkData = await SmartContract.networks[networkId];
-        if (networkData) {
+        if (networkData && networkId === '4') {
           const SmartContractObj = new Web3EthContract(
             SmartContract.abi,
             networkData.address

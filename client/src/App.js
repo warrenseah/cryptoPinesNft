@@ -217,10 +217,9 @@ function App() {
             purchase, you cannot undo this action.
           </s.TextDescription>
           <s.SpacerSmall />
-          {/* <s.TextDescription style={{ textAlign: "center", fontSize: 9 }}>
-            We have set the gas limit to 285000 for the contract to successfully
-            mint your NFT. We recommend that you don't change the gas limit.
-          </s.TextDescription> */}
+          <s.TextDescription style={{ textAlign: "center", fontSize: 9 }}>
+           {blockchain.contractAddress ? (`Contract address: ${blockchain.contractAddress}`) : ''}
+          </s.TextDescription>
         </s.Container>
       </s.Container>
     </s.Screen>
