@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
@@ -10,10 +10,11 @@ export const StyledButton = styled.button`
   padding: 10px;
   border-radius: 50px;
   border: none;
-  background-color: #ffffff;
+  background-color: #2ABB9B;
   padding: 10px;
+  margin: 10px;
   font-weight: bold;
-  color: #000000;
+  color: #ffffff;
   width: 100px;
   cursor: pointer;
   box-shadow: 0px 6px 0px -2px rgba(250, 250, 250, 0.3);
@@ -96,7 +97,7 @@ function App() {
   }, [blockchain.account]);
 
   return (
-    <s.Screen style={{ backgroundColor: "var(--black)" }}>
+    <s.Screen style={{ backgroundColor: "var(--white)" }}>
       <s.Container flex={1} ai={"center"} style={{ padding: 24 }}>
         <s.TextTitle
           style={{ textAlign: "center", fontSize: 28, fontWeight: "bold" }}
@@ -106,7 +107,7 @@ function App() {
         <s.SpacerMedium />
         <ResponsiveWrapper flex={1} style={{ padding: 24 }}>
           <s.Container flex={1} jc={"center"} ai={"center"}>
-            <StyledImg alt={"example"} src={i1} />
+            <StyledImg alt={"KryptoTrees Nft"} src={i1} />
             <s.SpacerMedium />
             <s.TextTitle
               style={{ textAlign: "center", fontSize: 35, fontWeight: "bold" }}
@@ -119,7 +120,7 @@ function App() {
             flex={1}
             jc={"center"}
             ai={"center"}
-            style={{ backgroundColor: "#383838", padding: 24 }}
+            style={{ background: "rgba(77, 175, 124, 0.3)", padding: 24 }}
           >
             {Number(data.availableSupply) === 10 ? (
               <>
@@ -183,13 +184,13 @@ function App() {
                           disabled={claimingNft ? 1 : 0}
                           onClick={() => setMintAmt(prevState => prevState + 1)}
                         >
-                          {claimingNft ? "BUSY" : `+`}
+                          {claimingNft ? "BUSY" : (<span role='img' aria-label='plus'>➕</span>)}
                         </StyledButton>
                         <StyledButton
                             disabled={claimingNft ? 1 : 0}
                             onClick={() => setMintAmt(prevState => prevState - 1)}
                           >
-                            {claimingNft ? "BUSY" : `-`}
+                            {claimingNft ? "BUSY" : (<span role='img' aria-label='minus'>➖</span>)}
                           </StyledButton>
                       </s.Container><s.Container ai={"center"} jc={"center"} fd={"row"}>
                           <StyledButton
@@ -200,7 +201,7 @@ function App() {
                               getData();
                             } }
                           >
-                            {claimingNft ? "BUSY" : `BUY ${mintAmt}`}
+                            {claimingNft ? "BUSY" : `MINT ${mintAmt}`}
                           </StyledButton>
                         </s.Container></>
                 )}
