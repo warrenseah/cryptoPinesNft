@@ -28,11 +28,7 @@ const HDWalletProvider = require("@truffle/hdwallet-provider");
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
-  api_keys: {
-    etherscan: process.env.ETHERSCAN_KEY,
-    polygonscan: process.env.POLYGONSCAN_KEY
-  },
-
+  
   plugins: [
     'truffle-plugin-verify'
   ],
@@ -50,7 +46,7 @@ module.exports = {
   networks: {
     rinkeby: {
       provider: () => {
-        new HDWalletProvider({
+        return new HDWalletProvider({
           privateKeys: [process.env.PRIVATE_KEY],
           providerOrUrl: process.env.INFURA_RINKEBY
         })
@@ -137,4 +133,9 @@ module.exports = {
   db: {
     enabled: false,
   },
+
+  api_keys: {
+    etherscan: '',
+    polygonscan: ''
+  }
 };
