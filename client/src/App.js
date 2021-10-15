@@ -132,7 +132,7 @@ function App() {
                   You can still find KryptoTree NFT on{" "}
                   <a
                     target={"_blank"}
-                    href={"https://opensea.io/collection/nerdy-coder-clones"}
+                    href={"https://testnets.opensea.io"}
                   >
                     Opensea.io
                   </a>
