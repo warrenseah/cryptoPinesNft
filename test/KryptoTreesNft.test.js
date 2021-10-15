@@ -242,17 +242,17 @@ contract("KryptoTreesNft", accounts => {
     await dai.transfer(kryptoTreesNft.address, web3.utils.toWei('1'), {from: admin});
 
     const contractDai = await dai.balanceOf(kryptoTreesNft.address);
-    console.log('Contract dai balance: ', contractDai.toString());
+    // console.log('Contract dai balance: ', contractDai.toString());
     assert(contractDai.toString() === web3.utils.toWei('1'));
 
     const adminDaiBefore = await dai.balanceOf(admin);
-    console.log('Before admin dai balance: ', adminDaiBefore.toString());
+    // console.log('Before admin dai balance: ', adminDaiBefore.toString());
     assert(adminDaiBefore.toString() === web3.utils.toWei('99'));
 
     await kryptoTreesNft.withdrawERC20(dai.address);
 
     const adminDaiAfter = await dai.balanceOf(admin);
-    console.log('After admin dai balance: ', adminDaiAfter.toString());
+    // console.log('After admin dai balance: ', adminDaiAfter.toString());
     assert(adminDaiAfter.toString() >= web3.utils.toWei('100'));
   });
 
