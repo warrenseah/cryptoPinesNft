@@ -2,7 +2,7 @@ const { expectRevert } = require('@openzeppelin/test-helpers');
 const { web3 } = require('@openzeppelin/test-helpers/src/setup');
 const { assert } = require('chai');
 const KryptoTreesNft = artifacts.require("KryptoTreesNft");
-const Dai = artifacts.require('Dai');
+// const Dai = artifacts.require('Dai');
 
 contract("KryptoTreesNft", accounts => {
   let kryptoTreesNft;
@@ -26,7 +26,7 @@ contract("KryptoTreesNft", accounts => {
     const symbol = await kryptoTreesNft.symbol();
     assert(symbol.toString() === 'TREE');
     const maxSupply = await kryptoTreesNft.maxSupply();
-    assert(maxSupply.toNumber() === 10);
+    assert(maxSupply.toNumber() === 10000);
     const mintingState = await kryptoTreesNft.pauseMintingState();
     assert(mintingState === true);
     const revealedState = await kryptoTreesNft.revealed();
@@ -34,27 +34,31 @@ contract("KryptoTreesNft", accounts => {
     const cost = await kryptoTreesNft.cost();
     assert(cost.toString()  === web3.utils.toWei('1', 'ether'));
     const startFrom = await kryptoTreesNft.startFrom();
-    assert(startFrom.toNumber()  === 3);
+    assert(startFrom.toNumber()  === 201);
     const availableTokens = await kryptoTreesNft.availableTokenCount();
-    assert(availableTokens.toNumber() === 8);
+    assert(availableTokens.toNumber() === 9800);
   });
 
   it('should not reveal tokenURI', async () => {
+    await kryptoTreesNft.setPauseMinting(false);
+    const mintingState = await kryptoTreesNft.pauseMintingState();
+    assert(mintingState === false);
+    await kryptoTreesNft.mint();
     const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
     const tokenNotRevealed = await kryptoTreesNft.tokenURI(adminTokenID[0].toNumber());
     assert(tokenNotRevealed, uriNotRevealed);
   });
 
-  it('should mint 2 at initial deployment', async () => {
+  it('should mint 200 at initial deployment', async () => {
     const availableTokens = await kryptoTreesNft.availableTokenCount();
-    assert(availableTokens.toNumber()  === 8);
+    assert(availableTokens.toNumber()  === 9800);
     const totalSupply = await kryptoTreesNft.totalSupply();
-    assert(totalSupply.toNumber()  === 2);
+    assert(totalSupply.toNumber()  === 200);
   });
 
-  it('admin should linearMint 2 at initial deployment', async () => {
+  it('admin should linearMint 200 at initial deployment', async () => {
     const adminBal = await kryptoTreesNft.balanceOf(admin);
-    assert(adminBal.toNumber()  === 2);
+    assert(adminBal.toNumber()  === 200);
     const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
     assert(adminTokenID[0].toNumber() + 1 === adminTokenID[1].toNumber());
   });
@@ -82,9 +86,9 @@ contract("KryptoTreesNft", accounts => {
     assert(mintingState === false);
     await kryptoTreesNft.mint();
     const adminBal = await kryptoTreesNft.balanceOf(admin);
-    assert(adminBal.toNumber() === 3);
+    assert(adminBal.toNumber() === 201);
     const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
-    assert(adminTokenID[2].toNumber() !== 3);
+    assert(adminTokenID[200].toNumber() !== 201);
   });
 
   it('should throw when nftTrader mint with zero cost', async() => {
@@ -139,7 +143,7 @@ contract("KryptoTreesNft", accounts => {
     const pauseMintingState = await kryptoTreesNft.pauseMintingState();
     assert(pauseMintingState === false);
     await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 3, { from: admin }),
+      kryptoTreesNft.mintTo(nftTrader2, 11, { from: admin }),
       'Mint amount must not be greater than maxMintAmount'
     );
   });
@@ -185,19 +189,19 @@ contract("KryptoTreesNft", accounts => {
     );
   });
 
-  it('should throw with mintTo by nftTrader when exceeding maxSupply', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await kryptoTreesNft.setMaxMintAmount(10);
-    const maxSupply = await kryptoTreesNft.maxMintAmount();
-    assert(maxSupply.toNumber() === 10);
+  // it('should throw with mintTo by nftTrader when exceeding maxSupply', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await kryptoTreesNft.setMaxMintAmount(12);
+  //   const maxSupply = await kryptoTreesNft.maxMintAmount();
+  //   assert(maxSupply.toNumber() === 12);
 
-    await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 10),
-      'Requested number of tokens not available'
-    );
-  });
+  //   await expectRevert(
+  //     kryptoTreesNft.mintTo(nftTrader2, 11),
+  //     'Requested number of tokens not available'
+  //   );
+  // });
 
   // Test onlyOwner modifer
   it('should throw if not reveal by owner', async () => {
@@ -212,16 +216,13 @@ contract("KryptoTreesNft", accounts => {
     await kryptoTreesNft.setPauseMinting(false);
     const pauseMintingState = await kryptoTreesNft.pauseMintingState();
     assert(pauseMintingState === false);
-    await kryptoTreesNft.setMaxMintAmount(8);
-    const maxSupply = await kryptoTreesNft.maxMintAmount();
-    assert(maxSupply.toNumber() === 8);
-    const totalMintFee = mintFee * 6;
-    await kryptoTreesNft.mintTo(nftTrader2, 6, { from: nftTrader, value: totalMintFee });
+    const totalMintFee = mintFee * 2;
+    await kryptoTreesNft.mintTo(nftTrader2, 2, { from: nftTrader, value: totalMintFee });
     const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
-    assert(trader2Bal.toNumber() === 6);
+    assert(trader2Bal.toNumber() === 2);
     await kryptoTreesNft.withdraw();
     const adminEthBal = await web3.eth.getBalance(admin);
-    assert(adminEthBal >= web3.utils.toWei('105'));
+    assert(adminEthBal >= web3.utils.toWei('101'));
   });
 
   it('should throw when withdraw called by non owner', async () => {
@@ -237,24 +238,24 @@ contract("KryptoTreesNft", accounts => {
     );
   });
 
-  it("should withdraw mockDai to owner's address", async () => {
-    const dai = await Dai.deployed();
-    await dai.transfer(kryptoTreesNft.address, web3.utils.toWei('1'), {from: admin});
+  // it("should withdraw mockDai to owner's address", async () => {
+  //   const dai = await Dai.deployed();
+  //   await dai.transfer(kryptoTreesNft.address, web3.utils.toWei('1'), {from: admin});
 
-    const contractDai = await dai.balanceOf(kryptoTreesNft.address);
-    // console.log('Contract dai balance: ', contractDai.toString());
-    assert(contractDai.toString() === web3.utils.toWei('1'));
+  //   const contractDai = await dai.balanceOf(kryptoTreesNft.address);
+  //   // console.log('Contract dai balance: ', contractDai.toString());
+  //   assert(contractDai.toString() === web3.utils.toWei('1'));
 
-    const adminDaiBefore = await dai.balanceOf(admin);
-    // console.log('Before admin dai balance: ', adminDaiBefore.toString());
-    assert(adminDaiBefore.toString() === web3.utils.toWei('99'));
+  //   const adminDaiBefore = await dai.balanceOf(admin);
+  //   // console.log('Before admin dai balance: ', adminDaiBefore.toString());
+  //   assert(adminDaiBefore.toString() === web3.utils.toWei('99'));
 
-    await kryptoTreesNft.withdrawERC20(dai.address);
+  //   await kryptoTreesNft.withdrawERC20(dai.address);
 
-    const adminDaiAfter = await dai.balanceOf(admin);
-    // console.log('After admin dai balance: ', adminDaiAfter.toString());
-    assert(adminDaiAfter.toString() >= web3.utils.toWei('100'));
-  });
+  //   const adminDaiAfter = await dai.balanceOf(admin);
+  //   // console.log('After admin dai balance: ', adminDaiAfter.toString());
+  //   assert(adminDaiAfter.toString() >= web3.utils.toWei('100'));
+  // });
 
   // Change mintFee cost
   it('should change mint cost', async () => {

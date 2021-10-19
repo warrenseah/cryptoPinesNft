@@ -16,8 +16,8 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
     Counters.Counter private _tokenCount;
     
     uint256 public cost = 1 ether;
-    uint256 public maxSupply = 10;
-    uint256 public maxMintAmount = 2;
+    uint256 public maxSupply = 10000;
+    uint256 public maxMintAmount = 10;
     
     string public baseURI = "";
     string public baseExtension = ".json";
@@ -30,10 +30,10 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
     mapping(uint => uint) private tokenMatrix;
 
     // The initial token ID
-    uint public startFrom = 3;
+    uint public startFrom = 201;
     
     constructor() ERC721("KryptoTrees NFT", "TREE") {
-        linearMint(2);
+        linearMint(200);
     }
     
     // public
