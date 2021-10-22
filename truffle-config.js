@@ -57,13 +57,16 @@ module.exports = {
 
     matic: {
       provider: () => new HDWalletProvider({
-        privateKeys: [process.env.PRIVATE_KEY],
-        providerOrUrl: process.env.INFURA_POLYGON
+        mnemonic: {
+          phrase: process.env.MNEMONICPHRASE
+        },
+        providerOrUrl: process.env.INFURA_POLYGON,
+        numberOfAddresses: 1
       }),
-      network_id: 80001,
+      network_id: '137',
       confirmations: 2,
       timeoutBlocks: 200,
-      gasPrice: 55000000000
+      gasPrice: 30000000000
     },
     
     // Useful for testing. The `development` name is special - truffle uses it by default
@@ -75,8 +78,7 @@ module.exports = {
     development: {
       host: "127.0.0.1", // Localhost (default: none)
       port: 8545, // Standard Ethereum port (default: none)
-      network_id: "*", // Any network (default: none),
-      gas: 80000000
+      network_id: "*" // Any network (default: none),
     }
     // Another network with more advanced options...
     // advanced: {
