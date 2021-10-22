@@ -48,7 +48,8 @@ export const connect = () => {
           method: "net_version",
         });
         const networkData = await SmartContract.networks[networkId];
-        if (networkData && networkId === '4') {
+        // networkId === '137'for polygon
+        if (networkData && networkId === '137') {
           const SmartContractObj = new Web3EthContract(
             SmartContract.abi,
             networkData.address

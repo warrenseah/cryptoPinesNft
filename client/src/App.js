@@ -122,7 +122,7 @@ function App() {
             ai={"center"}
             style={{ background: "rgba(77, 175, 124, 0.3)", padding: 24 }}
           >
-            {Number(data.availableSupply) === 10 ? (
+            {Number(data.availableSupply) === 10000 ? (
               <>
                 <s.TextTitle style={{ textAlign: "center" }}>
                   The sale has ended.
@@ -132,7 +132,7 @@ function App() {
                   You can still find KryptoTree NFT on{" "}
                   <a
                     target={"_blank"}
-                    href={"https://testnets.opensea.io"}
+                    href={"https://opensea.io"}
                   >
                     Opensea.io
                   </a>
@@ -182,13 +182,27 @@ function App() {
                         <s.TextDescription>Choose mint amount: </s.TextDescription>
                         <StyledButton
                           disabled={claimingNft ? 1 : 0}
-                          onClick={() => setMintAmt(prevState => prevState + 1)}
+                          onClick={() => setMintAmt(prevState => {
+                              if(String(prevState) === data.maxMintAmount) {
+                                return prevState;
+                              } else {
+                                return prevState + 1;
+                              }
+                            }
+                          )}
                         >
                           {claimingNft ? "BUSY" : (<span role='img' aria-label='plus'>➕</span>)}
                         </StyledButton>
+                        <s.TextDescription> {mintAmt} </s.TextDescription>
                         <StyledButton
                             disabled={claimingNft ? 1 : 0}
-                            onClick={() => setMintAmt(prevState => prevState - 1)}
+                            onClick={() => setMintAmt(prevState => {
+                              if(prevState === 1) {
+                                return prevState;
+                              } else {
+                                return prevState - 1;
+                              }
+                            })}
                           >
                             {claimingNft ? "BUSY" : (<span role='img' aria-label='minus'>➖</span>)}
                           </StyledButton>
@@ -201,7 +215,7 @@ function App() {
                               getData();
                             } }
                           >
-                            {claimingNft ? "BUSY" : `MINT ${mintAmt}`}
+                            {claimingNft ? "BUSY" : `MINT`}
                           </StyledButton>
                         </s.Container></>
                 )}
