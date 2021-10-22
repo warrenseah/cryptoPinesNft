@@ -15,7 +15,7 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
     
     Counters.Counter private _tokenCount;
     
-    uint256 public cost = 1 ether;
+    uint256 public cost = 10 ether;
     uint256 public maxSupply = 10000;
     uint256 public maxMintAmount = 10;
     
@@ -31,10 +31,9 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
 
     // The initial token ID
     uint public startFrom = 201;
+    bool public initialMint = false;
     
-    constructor() ERC721("KryptoTrees NFT", "TREE") {
-        linearMint(200);
-    }
+    constructor() ERC721("KryptoTrees NFT", "TREE") {}
     
     // public
     function mint() external payable ensureAvailabilityFor(1) {
@@ -93,6 +92,19 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
     }
     
     //only owner
+    function linearMint(uint _tries) external onlyOwner {
+        require(initialMint == false, 'Initial mint by admin is already performed before.');
+        require(_tokenCount.current() + _tries <= maxSupply, 'Cannot mint more than total supply.');
+        for (uint i = 0; i < _tries; i++) {
+            _tokenCount.increment();
+            _safeMint(msg.sender, _tokenCount.current());
+            if(_tokenCount.current() == 200) {
+                initialMint = true;
+                return;
+            }
+        }
+    }
+    
     function setBaseURI(string memory _newBaseURI) public onlyOwner {
         baseURI = _newBaseURI;
     }
@@ -191,15 +203,6 @@ contract KryptoTreesNft is ERC721, Ownable, ERC721Enumerable {
         _tokenCount.increment();
 
         return value + startFrom;
-    }
-    
-    function linearMint(uint _tries) private onlyOwner {
-        require(_tokenCount.current() + 1 <= maxSupply, 'Cannot mint more than total supply.');
-        
-        for (uint i = 0; i < _tries; i++) {
-            _tokenCount.increment();
-            _safeMint(msg.sender, _tokenCount.current());
-        }
     }
     
     // modifier
