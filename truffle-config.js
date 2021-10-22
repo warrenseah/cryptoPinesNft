@@ -60,10 +60,10 @@ module.exports = {
         mnemonic: {
           phrase: process.env.MNEMONICPHRASE
         },
-        providerOrUrl: process.env.INFURA_POLYGON,
+        providerOrUrl: 'https://polygon-rpc.com/',
         numberOfAddresses: 1
       }),
-      network_id: '137',
+      network_id: 137,
       confirmations: 2,
       timeoutBlocks: 200,
       gasPrice: 30000000000
