@@ -1,6 +1,6 @@
 const KryptoTreesNft = artifacts.require("KryptoTreesNft");
 
 module.exports = async function (deployer, network, accounts) {
-  await deployer.deploy(KryptoTreesNft, {gas: 80000000, gasPrice: 30000000000});
+  await deployer.deploy(KryptoTreesNft);
   console.log('Contracts are deployed successfully.');
 };
