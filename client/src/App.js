@@ -132,9 +132,9 @@ function App() {
                   You can still find KryptoTree NFT on{" "}
                   <a
                     target={"_blank"}
-                    href={"https://opensea.io"}
+                    href={"https://opensea.io/collection/kryptotrees-nft"}
                   >
-                    Opensea.io
+                    KryptoTrees NFT on Opensea.io
                   </a>
                 </s.TextDescription>
               </>
