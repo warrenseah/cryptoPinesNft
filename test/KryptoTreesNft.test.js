@@ -36,7 +36,7 @@ contract("KryptoTreesNft", accounts => {
     const startFrom = await kryptoTreesNft.startFrom();
     assert(startFrom.toNumber()  === 201);
     const availableTokens = await kryptoTreesNft.availableTokenCount();
-    assert(availableTokens.toNumber() === 9800);
+    assert(availableTokens.toNumber() === 10000);
   });
 
   it('should not reveal tokenURI', async () => {
@@ -49,145 +49,172 @@ contract("KryptoTreesNft", accounts => {
     assert(tokenNotRevealed, uriNotRevealed);
   });
 
-  it('should mint 200 at initial deployment', async () => {
+  it('should mint 200 with linearMint', async () => {
+    const initialMintState = await kryptoTreesNft.initialMint();
+    assert(initialMintState == false);
+    await kryptoTreesNft.linearMint(200);
     const availableTokens = await kryptoTreesNft.availableTokenCount();
     assert(availableTokens.toNumber()  === 9800);
     const totalSupply = await kryptoTreesNft.totalSupply();
     assert(totalSupply.toNumber()  === 200);
+    const initialMintStateAfter = await kryptoTreesNft.initialMint();
+    assert(initialMintStateAfter == true);
   });
 
-  it('admin should linearMint 200 at initial deployment', async () => {
-    const adminBal = await kryptoTreesNft.balanceOf(admin);
-    assert(adminBal.toNumber()  === 200);
-    const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
-    assert(adminTokenID[0].toNumber() + 1 === adminTokenID[1].toNumber());
+  it('should mint 100 with linearMint', async () => {
+    const initialMintState = await kryptoTreesNft.initialMint();
+    assert(initialMintState == false);
+    await kryptoTreesNft.linearMint(100);
+    const availableTokens = await kryptoTreesNft.availableTokenCount();
+    assert(availableTokens.toNumber()  === 9900);
+    const totalSupply = await kryptoTreesNft.totalSupply();
+    assert(totalSupply.toNumber()  === 100);
+    const initialMintStateAfter = await kryptoTreesNft.initialMint();
+    assert(initialMintStateAfter == false);
+  });
+
+  it('should linearMint 200 even we mint pass 200', async () => {
+    const initialMintState = await kryptoTreesNft.initialMint();
+    assert(initialMintState == false);
+    await kryptoTreesNft.linearMint(120);
+    await kryptoTreesNft.linearMint(100);
+    const availableTokens = await kryptoTreesNft.availableTokenCount();
+    assert(availableTokens.toNumber()  === 9800);
+    const totalSupply = await kryptoTreesNft.totalSupply();
+    assert(totalSupply.toNumber()  === 200);
+    const initialMintStateAfter = await kryptoTreesNft.initialMint();
+    assert(initialMintStateAfter == true);
   });
 
   it('should reveal tokenURI', async () => {
     await kryptoTreesNft.reveal(true);
     const revealState = await kryptoTreesNft.revealed();
     assert(revealState === true);
+    await kryptoTreesNft.setPauseMinting(false);
+    const mintingState = await kryptoTreesNft.pauseMintingState();
+    assert(mintingState === false);
+    await kryptoTreesNft.mint();
     const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
     const tokenNotRevealed = await kryptoTreesNft.tokenURI(adminTokenID[0].toNumber());
     assert(tokenNotRevealed !== uriNotRevealed);
   });
 
   // Test mint and mintTo function
-  it('should not be able to mint', async () => {
-    await expectRevert(
-      kryptoTreesNft.mint({from: admin}),
-      'Minting is paused.'
-    );
-  });
+  // it('should not be able to mint', async () => {
+  //   await expectRevert(
+  //     kryptoTreesNft.mint({from: admin}),
+  //     'Minting is paused.'
+  //   );
+  // });
 
-  it('should randomly mint nft called by admin with zero cost', async() => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const mintingState = await kryptoTreesNft.pauseMintingState();
-    assert(mintingState === false);
-    await kryptoTreesNft.mint();
-    const adminBal = await kryptoTreesNft.balanceOf(admin);
-    assert(adminBal.toNumber() === 201);
-    const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
-    assert(adminTokenID[200].toNumber() !== 201);
-  });
+  // it('should randomly mint nft called by admin with zero cost', async() => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const mintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(mintingState === false);
+  //   await kryptoTreesNft.mint();
+  //   const adminBal = await kryptoTreesNft.balanceOf(admin);
+  //   assert(adminBal.toNumber() === 201);
+  //   const adminTokenID = await kryptoTreesNft.walletOfOwner(admin);
+  //   assert(adminTokenID[200].toNumber() !== 201);
+  // });
 
-  it('should throw when nftTrader mint with zero cost', async() => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const mintingState = await kryptoTreesNft.pauseMintingState();
-    assert(mintingState === false);
-    await expectRevert(
-      kryptoTreesNft.mint({ from: nftTrader }),
-      'Need to send the minting fee.'
-    );
-  });
+  // it('should throw when nftTrader mint with zero cost', async() => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const mintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(mintingState === false);
+  //   await expectRevert(
+  //     kryptoTreesNft.mint({ from: nftTrader }),
+  //     'Need to send the minting fee.'
+  //   );
+  // });
 
-  it('should mint successfully by nftTrader', async() => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const mintingState = await kryptoTreesNft.pauseMintingState();
-    assert(mintingState === false);
-    await kryptoTreesNft.mint({ from: nftTrader, value:mintFee });
-    const nftTraderBal = await kryptoTreesNft.balanceOf(nftTrader);
-    assert(nftTraderBal.toNumber() === 1);
-  });
+  // it('should mint successfully by nftTrader', async() => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const mintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(mintingState === false);
+  //   await kryptoTreesNft.mint({ from: nftTrader, value:mintFee });
+  //   const nftTraderBal = await kryptoTreesNft.balanceOf(nftTrader);
+  //   assert(nftTraderBal.toNumber() === 1);
+  // });
 
-  it('should throw when mintTo nftTrader2 by admin', async () => {
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === true);
-    await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 1, { from: admin }),
-      'Minting is paused.'
-    );
-  });
+  // it('should throw when mintTo nftTrader2 by admin', async () => {
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === true);
+  //   await expectRevert(
+  //     kryptoTreesNft.mintTo(nftTrader2, 1, { from: admin }),
+  //     'Minting is paused.'
+  //   );
+  // });
 
-  it('should mintTo nftTrader2 by admin', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await kryptoTreesNft.mintTo(nftTrader2, 2, { from: admin });
-    const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
-    assert(trader2Bal.toNumber() === 2);
-  });
+  // it('should mintTo nftTrader2 by admin', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await kryptoTreesNft.mintTo(nftTrader2, 2, { from: admin });
+  //   const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
+  //   assert(trader2Bal.toNumber() === 2);
+  // });
 
-  it('should throw with mintTo amount set to zero', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 0, { from: admin }),
-      'Mint amount must be greater than 0.'
-    );
-  });
+  // it('should throw with mintTo amount set to zero', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await expectRevert(
+  //     kryptoTreesNft.mintTo(nftTrader2, 0, { from: admin }),
+  //     'Mint amount must be greater than 0.'
+  //   );
+  // });
 
-  it('should throw with mintTo amount set to greater than maxMintAmt', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 11, { from: admin }),
-      'Mint amount must not be greater than maxMintAmount'
-    );
-  });
+  // it('should throw with mintTo amount set to greater than maxMintAmt', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await expectRevert(
+  //     kryptoTreesNft.mintTo(nftTrader2, 11, { from: admin }),
+  //     'Mint amount must not be greater than maxMintAmount'
+  //   );
+  // });
 
-  it('should throw with mintTo by nftTrader without minting fee', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 1, { from: nftTrader }),
-      'Need to send the minting fee.'
-    );
-  });
+  // it('should throw with mintTo by nftTrader without minting fee', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await expectRevert(
+  //     kryptoTreesNft.mintTo(nftTrader2, 1, { from: nftTrader }),
+  //     'Need to send the minting fee.'
+  //   );
+  // });
 
-  it('should mintTo nftTrader2 address called from nftTrader with minting fee', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await kryptoTreesNft.mintTo(nftTrader2, 1, { from: nftTrader, value: mintFee });
-    const traderEthBal = await web3.eth.getBalance(nftTrader);
-    assert(traderEthBal <= web3.utils.toWei('99'));
-    const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
-    assert(trader2Bal.toNumber() === 1);
-  });
+  // it('should mintTo nftTrader2 address called from nftTrader with minting fee', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await kryptoTreesNft.mintTo(nftTrader2, 1, { from: nftTrader, value: mintFee });
+  //   const traderEthBal = await web3.eth.getBalance(nftTrader);
+  //   assert(traderEthBal <= web3.utils.toWei('99'));
+  //   const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
+  //   assert(trader2Bal.toNumber() === 1);
+  // });
 
-  it('should mintTo nftTrader2 address 2 TREE nft called from nftTrader with minting fee', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    const twoMintFee = mintFee * 2;
-    await kryptoTreesNft.mintTo(nftTrader2, 2, { from: nftTrader, value: twoMintFee });
-    const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
-    assert(trader2Bal.toNumber() === 2);
-  });
+  // it('should mintTo nftTrader2 address 2 TREE nft called from nftTrader with minting fee', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   const twoMintFee = mintFee * 2;
+  //   await kryptoTreesNft.mintTo(nftTrader2, 2, { from: nftTrader, value: twoMintFee });
+  //   const trader2Bal = await kryptoTreesNft.balanceOf(nftTrader2);
+  //   assert(trader2Bal.toNumber() === 2);
+  // });
 
-  it('should throw mintTo nftTrader2 address 2 TREE nft called from nftTrader with insufficient minting fee', async () => {
-    await kryptoTreesNft.setPauseMinting(false);
-    const pauseMintingState = await kryptoTreesNft.pauseMintingState();
-    assert(pauseMintingState === false);
-    await expectRevert(
-      kryptoTreesNft.mintTo(nftTrader2, 2, { from: nftTrader, value: mintFee }),
-      'Need to send the minting fee.'
-    );
-  });
+  // it('should throw mintTo nftTrader2 address 2 TREE nft called from nftTrader with insufficient minting fee', async () => {
+  //   await kryptoTreesNft.setPauseMinting(false);
+  //   const pauseMintingState = await kryptoTreesNft.pauseMintingState();
+  //   assert(pauseMintingState === false);
+  //   await expectRevert(
+  //     kryptoTreesNft.mintTo(nftTrader2, 2, { from: nftTrader, value: mintFee }),
+  //     'Need to send the minting fee.'
+  //   );
+  // });
 
   // it('should throw with mintTo by nftTrader when exceeding maxSupply', async () => {
   //   await kryptoTreesNft.setPauseMinting(false);
