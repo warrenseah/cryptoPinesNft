@@ -61,7 +61,7 @@ module.exports = {
           phrase: process.env.MNEMONICPHRASE
         },
         providerOrUrl: 'https://polygon-rpc.com/',
-        numberOfAddresses: 1
+        numberOfAddresses: 2
       }),
       network_id: 137,
       confirmations: 2,
